@@ -1,5 +1,8 @@
 from tkinter import *
 from tkinter import ttk
+
+from tkinter import messagebox as MessageBox
+
 import sqlite3
 
 class Boosk:
@@ -10,33 +13,48 @@ class Boosk:
         # Initializations 
         self.wind = window
         self.wind.title('The Home Books')
+        window.config(bg ="SkyBlue1")
+
+
 
         # Creating a frame container
         frame = LabelFrame(self.wind, text = 'Register a new Book')
         frame.grid(row =0, column = 0, columnspan = 3, pady = 20)
+
 
         Label(frame, text = 'Name Book: ').grid(row =1, column = 0)
         self.name  = Entry(frame)
         self.name.focus()
         self.name.grid(row =1, column = 1)
 
-        Label(frame, text = 'Autor: ').grid(row =2, column = 0)
+        Label(frame, text = 'Author: ').grid(row =2, column = 0)
         self.autor  = Entry(frame)
         self.autor.grid(row =2, column = 1)
+        
 
-        ttk.Button(frame, text = 'Register Book', command = self.add_book ).grid(row = 4, columnspan = 2, sticky = W + E)
 
-        self.message = Label(text = '', fg = 'red')
-        self.message.grid(row = 4, column = 0, columnspan = 2, sticky = W + E)   
+        Label(frame, text = 'Editorial: ').grid(row =3, column = 0)
+        self.edit  = Entry(frame)
+        self.edit.grid(row =3, column = 1)
+        
+        Label(frame, text = 'year of publication: ').grid(row =4, column = 0)
+        self.year  = Entry(frame)
+        self.year.grid(row =4, column = 1)
 
-        self.tree = ttk.Treeview(height =  10, column = 2)
-        self.tree.grid ( row = 5, column = 0, columnspan = 2 )
+        ttk.Button(frame, text = 'Register Book', command = self.add_book ).grid(row = 5, columnspan = 2, sticky = W + E)
+
+        self.message = Label( text = '', fg = 'red', bg= 'black', font = ("Verdana",15),pady=10, )
+        self.message.grid(row = 6, column = 0, columnspan = 4, sticky = W + E)   
+
+        self.tree = ttk.Treeview(height =  10, column = 5)
+        self.tree.grid ( row = 7, column = 0, columnspan = 4, pady = 20, padx=20)
         self.tree.heading ('#0', text = 'Name Book', anchor = CENTER)
         self.tree.heading ('#1', text = 'Autor', anchor = CENTER)
 
         #Delete an edit Buttons
-        ttk.Button(text = 'Delete', command = self.delete_book).grid(row = 6, column = 0, sticky = W + E)
-        ttk.Button(text = 'Update', command =self.edit_book).grid(row = 6, column = 1, sticky = W + E)
+        ttk.Button(text = 'Delete', command = self.delete_book).grid(row = 12, column = 0, pady=20)
+        ttk.Button(text = 'Update', command =self.edit_book).grid(row = 12, column = 1,pady=20)
+        ttk.Button(text = 'Search').grid(row = 12, column = 2,pady=20)
 
 
         self.get_products()
@@ -67,11 +85,13 @@ class Boosk:
             query = 'INSERT INTO Books VALUES(NULL, ?, ?)'
             parameters =  (self.name.get(), self.autor.get())
             self.run_query(query, parameters)
-            self.message['text'] = 'Product {} added Successfully'.format(self.name.get())
+            self.message['text'] = 'Book {} added Successfully'.format(self.name.get())
             self.name.delete(0, END)
             self.autor.delete(0, END)
+            self.edit.delete(0, END)
+            self.year.delete(0, END)
         else:
-            self.message['text'] = 'Name del libro and Autor is Required'
+            MessageBox.showinfo("Alert" , "Book name and Author is Required")
         self.get_products()
 
     def delete_book(self):
@@ -80,7 +100,7 @@ class Boosk:
             self.tree.item(self.tree.selection())['text'][0]
 
         except IndexError as e:
-            self.message['text'] = 'Please select a Record '
+            MessageBox.showinfo("Alert_Info" , "Please select a record")
             return
         self.message['text'] = ''
         name =self.tree.item(self.tree.selection())['text']
