@@ -50,6 +50,7 @@ class Boosk:
         self.tree.grid ( row = 7, column = 0, columnspan = 4, pady = 20, padx=20)
         self.tree.heading ('#0', text = 'Name Book', anchor = CENTER)
         self.tree.heading ('#1', text = 'Autor', anchor = CENTER)
+        self.tree.heading ('#2', text = 'Name', anchor = CENTER)
 
         #Delete an edit Buttons
         ttk.Button(text = 'Delete', command = self.delete_book).grid(row = 12, column = 0, pady=20)
