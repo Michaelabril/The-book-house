@@ -1,11 +1,6 @@
 from tkinter import *
 from tkinter import ttk
 
-
-
-
-
-
 from tkinter import messagebox as MessageBox
 
 import sqlite3
@@ -18,8 +13,8 @@ class Boosk:
         # Initializations 
         self.wind = window
         self.wind.title('The Home Books')
-        window.config(bg ="SkyBlue1")
-
+        window.config(bg ="light slate gray")
+        
         # Creating a frame container
         frame = LabelFrame(self.wind, text = 'Register a new Book')
         frame.grid(row =0, column = 0, columnspan = 3, pady = 20)
@@ -31,7 +26,6 @@ class Boosk:
 
         Label(frame, text = 'Name Book: ').grid(row =2, column = 0)
         self.name  = Entry(frame)
-        self.name.focus()
         self.name.grid(row =2, column = 1)
 
         Label(frame, text = 'Editorial: ').grid(row =3, column = 0)
@@ -43,7 +37,6 @@ class Boosk:
         self.year.grid(row =4, column = 1)
 
         ttk.Button(frame, text = 'Register Book', command = self.add_book ).grid(row = 5, columnspan = 2, sticky = W + E)
-
         
         self.message = Label( text = '', fg = 'red', bg= 'black', font = ("Verdana",15),pady=10, )
         self.message.grid(row = 6, column = 0, columnspan = 4, sticky = W + E)   
@@ -57,9 +50,12 @@ class Boosk:
         self.tree.heading ('#4', text = 'Year of publication', anchor = CENTER)
 
         #Delete an edit Buttons
-        ttk.Button(text = 'Delete', command = self.delete_book).grid(row = 12, column = 0, pady=20)
-        ttk.Button(text = 'Update', command =self.edit_book).grid(row = 12, column = 1,pady=20)
-        ttk.Button(text = 'Search').grid(row = 12, column = 2,pady=20)
+        ttk.Button(text = 'Delete', command = self.delete_book).grid(row = 12, column = 1, pady=20, padx =5, sticky = W + E)
+        ttk.Button(text = 'Update', command =self.edit_book).grid(row = 12, column = 2,pady=20, padx =5, sticky = W + E)
+        ttk.Button(text = 'View', command = self.get_products).grid(row = 13, column = 1, pady= 20, padx =5, sticky = W + E)
+        ttk.Button(text = 'Search', command = self.search_book).grid(row = 13, column = 2, pady= 20, padx =5, sticky = W + E)
+        self.buscar  = Entry(window)
+        self.buscar.grid(row =13, column = 3 , sticky = W + E, padx = 5)
 
 
         self.get_products()
@@ -121,7 +117,7 @@ class Boosk:
             self.tree.item(self.tree.selection())['values'][0]
 
         except IndexError as e:
-            self.message['text'] = 'Please select a Record '
+            MessageBox.showinfo("Alert_Info" , "Please select a record")
             return
        
         name = self.tree.item(self.tree.selection())['values'][0]
@@ -133,15 +129,14 @@ class Boosk:
         self.edit_wind.geometry("400x350")
         self.edit_wind.title = ("Edit Book")
 
-          # Old AUTOR 
+        # Old AUTOR 
         Label(self.edit_wind, text = 'Autor:').grid(row = 0, column = 1)
         Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = name), state = 'readonly').grid(row = 0, column = 2, pady = 10 )
         # New AUTOR
         Label(self.edit_wind, text = 'New Autor:').grid(row = 1, column = 1)
         new_autor= Entry(self.edit_wind)
         new_autor.grid(row = 1, column = 2)
-        
-
+    
         # Old Name of Book
         Label(self.edit_wind, text = 'Book Name:').grid(row = 3, column = 1)
         Entry(self.edit_wind, textvariable = StringVar(self.edit_wind, value = autor), state = 'readonly').grid(row = 3, column = 2, pady = 10,  )
@@ -170,12 +165,28 @@ class Boosk:
         self.edit_wind.mainloop()
 
     def edit_Book(self, new_name, name, new_autor, autor, new_editorial, editorial, new_year, year):
+        
         query = 'UPDATE Books SET name = ?, autor = ?, editorial = ?, year_pub = ? WHERE name = ? AND autor = ? AND editorial = ? AND  year_pub = ?'
         parameters = (new_name, new_autor, new_editorial, new_year, name , autor, editorial, year)
         self.run_query(query, parameters)
         self.edit_wind.destroy()
         self.message['text'] = 'Record {} updated successfylly'.format(name)
         self.get_products()
+
+    def search_book(self):
+        self.message['text'] = ''
+        search = self.buscar.get()
+        if search:
+            records = self.tree.get_children()
+            for element in records:
+                self.tree.delete(element)
+            query = f'SELECT * FROM Books WHERE autor LIKE "{search}%" OR name LIKE "{search}%" OR editorial LIKE "{search}%" OR year_pub LIKE "{search}%"'
+            db_rows = self.run_query(query)
+            for row in db_rows:    
+                self.tree.insert('', "end", text =  row[0], values = (row[1] , row[2] , row[3], row[4]))
+        else: 
+            MessageBox.showinfo("Alert_Info" , "Please Insert a record")
+        self.buscar.delete(0, END)  
        
 if __name__ == '__main__':
     window = Tk()
