@@ -8,7 +8,6 @@ import sqlite3
 class Boosk:
 
     db_name = 'database.db'
-
     def __init__(self, window):
         # Initializations 
         self.wind = window
@@ -57,18 +56,23 @@ class Boosk:
         self.buscar  = Entry(window)
         self.buscar.grid(row =13, column = 3 , sticky = W + E, padx = 5)
 
-
+        self.create_table()
         self.get_products()
  
     def run_query(self,query,parameters = ()):
         with sqlite3.connect(self.db_name) as connection:
-          cursor = connection.cursor() 
+          cursor = connection.cursor()  
           result = cursor.execute(query, parameters)
           connection.commit()
         return  result  
-    
-    def  get_products(self):
 
+    def create_table(self):
+        query = '''CREATE TABLE if not exists Books
+             (id integer not null primary key autoincrement, name text not null, autor text not null, editorial text not null, year_pub text integer not null)'''
+        self.run_query(query)
+
+
+    def  get_products(self):
         records = self.tree.get_children()
         for element in records:
             self.tree.delete(element)
@@ -99,7 +103,6 @@ class Boosk:
         self.message['text'] = ''
         try:
             self.tree.item(self.tree.selection())['values'][0]
-
         except IndexError as e:
             MessageBox.showinfo("Alert_Info" , "Please select a record")
             return
@@ -163,11 +166,13 @@ class Boosk:
 
         Button(self.edit_wind, text = 'Update', command = lambda: self.edit_Book(new_name.get(), name, new_autor.get(), autor, new_editorial.get(), editorial, new_year.get(), year)).grid(row = 9, column = 2, pady = 20 , sticky = W)
         self.edit_wind.mainloop()
+        
+
 
     def edit_Book(self, new_name, name, new_autor, autor, new_editorial, editorial, new_year, year):
         
         query = 'UPDATE Books SET name = ?, autor = ?, editorial = ?, year_pub = ? WHERE name = ? AND autor = ? AND editorial = ? AND  year_pub = ?'
-        parameters = (new_name, new_autor, new_editorial, new_year, name , autor, editorial, year)
+        parameters = (new_autor, new_name, new_editorial, new_year, name , autor, editorial, year)
         self.run_query(query, parameters)
         self.edit_wind.destroy()
         self.message['text'] = 'Record {} updated successfylly'.format(name)
