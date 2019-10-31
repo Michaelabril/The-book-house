@@ -8,6 +8,7 @@ The book house is a desktop application where you can register book names with t
 1. Tener instalado python3
   
     **$ sudo apt-get update**
+    
     **$ sudo apt-get install python3.6**
   
 2. tener instalado sqlite3
