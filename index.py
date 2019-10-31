@@ -1,22 +1,24 @@
 from tkinter import *
 from tkinter import ttk
-from PIL import ImageTk, Image
+from PIL import Image, ImageTk
 from tkinter import messagebox as MessageBox
 import sqlite3
 
 class Boosk:
 
     db_name = 'database.db'
+    
     def __init__(self, window):
         # Initializations 
         self.wind = window
         self.wind.title('The Home Books')
         window.config(bg ="light slate gray")
-        image = PhotoImage(file= "fondo.gif")
-        label = Label(window, image=image).place(x=650, y = 5)
-    
+        load = Image.open('fondo.gif')
+        render = ImageTk.PhotoImage(load)
+        label = Label(self.wind, image=render)
+        label.image = render
+        label.place(x=650,y = 5)
   
-        
         # Creating a frame container
         frame = LabelFrame(self.wind, text = 'Register a new Book')
         frame.grid(row =0, column = 0, columnspan = 3, pady = 20)
