@@ -1,8 +1,7 @@
 from tkinter import *
 from tkinter import ttk
-
+from PIL import ImageTk, Image
 from tkinter import messagebox as MessageBox
-
 import sqlite3
 
 class Boosk:
@@ -13,6 +12,10 @@ class Boosk:
         self.wind = window
         self.wind.title('The Home Books')
         window.config(bg ="light slate gray")
+        image = PhotoImage(file= "fondo.gif")
+        label = Label(window, image=image).place(x=650, y = 5)
+    
+  
         
         # Creating a frame container
         frame = LabelFrame(self.wind, text = 'Register a new Book')
@@ -71,7 +74,6 @@ class Boosk:
              (id integer not null primary key autoincrement, name text not null, autor text not null, editorial text not null, year_pub text integer not null)'''
         self.run_query(query)
 
-
     def  get_products(self):
         records = self.tree.get_children()
         for element in records:
@@ -83,7 +85,7 @@ class Boosk:
             self.tree.insert('', "end", text =  row[0], values = (row[1] , row[2] , row[3], row[4] ))
 
     def validation(self):
-        return len(self.name.get()) != 0 and len(self.autor.get()) != 0
+        return len(self.name.get()) != 0 and len(self.autor.get()) != 0 and len(self.edit.get()) != 0 and len(self.year.get()) != 0
     
     def add_book(self):
         if self.validation():
@@ -96,7 +98,7 @@ class Boosk:
             self.edit.delete(0, END)
             self.year.delete(0, END)
         else:
-            MessageBox.showinfo("Alert" , "Book name and Author is Required")
+            MessageBox.showinfo("Alert_Info" , "Please Insert all record ")
         self.get_products()
 
     def delete_book(self):
@@ -130,7 +132,7 @@ class Boosk:
 
         self.edit_wind = Toplevel()
         self.edit_wind.geometry("400x350")
-        self.edit_wind.title = ("Edit Book")
+        self.edit_wind.title("Edit Book")
 
         # Old AUTOR 
         Label(self.edit_wind, text = 'Autor:').grid(row = 0, column = 1)
@@ -164,19 +166,21 @@ class Boosk:
         new_year = Entry(self.edit_wind)
         new_year.grid(row = 8, column = 2 )
 
-        Button(self.edit_wind, text = 'Update', command = lambda: self.edit_Book(new_name.get(), name, new_autor.get(), autor, new_editorial.get(), editorial, new_year.get(), year)).grid(row = 9, column = 2, pady = 20 , sticky = W)
+        Button(self.edit_wind, text = 'Update', command = lambda: self.edit_records(new_name.get(), name, new_autor.get(), autor, new_editorial.get(), editorial, new_year.get(), year)).grid(row = 9, column = 1, pady = 20 , padx= 50, sticky = W)
+
+        Button(self.edit_wind, text = 'Cancel', command = self.edit_wind.destroy).grid(row = 9, column = 2)
         self.edit_wind.mainloop()
-        
 
-
-    def edit_Book(self, new_name, name, new_autor, autor, new_editorial, editorial, new_year, year):
-        
-        query = 'UPDATE Books SET name = ?, autor = ?, editorial = ?, year_pub = ? WHERE name = ? AND autor = ? AND editorial = ? AND  year_pub = ?'
-        parameters = (new_autor, new_name, new_editorial, new_year, name , autor, editorial, year)
-        self.run_query(query, parameters)
-        self.edit_wind.destroy()
-        self.message['text'] = 'Record {} updated successfylly'.format(name)
-        self.get_products()
+    def edit_records(self, new_name, name, new_autor, autor, new_editorial, editorial, new_year, year):
+        if new_name and new_autor and new_editorial and new_year:
+            query = 'UPDATE Books SET name = ?, autor = ?, editorial = ?, year_pub = ? WHERE name = ? AND autor = ? AND editorial = ? AND  year_pub = ?'
+            parameters = (new_autor, new_name, new_editorial, new_year, name , autor, editorial, year)
+            self.run_query(query, parameters)
+            self.edit_wind.destroy()
+            self.message['text'] = 'Record {} updated successfylly'.format(name)
+            self.get_products()
+        else:
+            MessageBox.showinfo("Alert_Info" , "Please Insert all record ")
 
     def search_book(self):
         self.message['text'] = ''
