@@ -31,5 +31,5 @@ Installation is simple. The basic dependencies are standard Unix utilities / com
 ## Run the application
 To run the application we must enter the shell and go to the path where the project is located and execute the following command
  
-    **python3 index.py**
+    python3 index.py
 
