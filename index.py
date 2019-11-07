@@ -198,8 +198,7 @@ class Boosk:
         else: 
             MessageBox.showinfo("Alert_Info" , "Please Insert a record")
         self.buscar.delete(0, END)
-        else: 
-           print ("data")
+        
 if __name__ == '__main__':
     window = Tk()
     application = Boosk(window)
