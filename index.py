@@ -197,10 +197,10 @@ class Boosk:
                 self.tree.insert('', "end", text =  row[0], values = (row[1] , row[2] , row[3], row[4]))
         else: 
             MessageBox.showinfo("Alert_Info" , "Please Insert a record")
-        self.buscar.delete(0, END)  
-       
+        self.buscar.delete(0, END)
+        else: 
+           print ("data")
 if __name__ == '__main__':
     window = Tk()
     application = Boosk(window)
     window.mainloop()
-
